@@ -1,0 +1,91 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 11
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External Items", "External Items", "{B66E0E44-D7A0-4320-9C64-2B181D4AFB78}"
+	ProjectSection(SolutionItems) = preProject
+		Trim.xslt = Trim.xslt
+		W3c.XForms.FormUrlEncoded.xslt = W3c.XForms.FormUrlEncoded.xslt
+		Web.UI.Xhtml1StrictToHtml401StrictFilter.xslt = Web.UI.Xhtml1StrictToHtml401StrictFilter.xslt
+		Web.UI.Xhtml1StrictToHtml401StrictFilterP.xslt = Web.UI.Xhtml1StrictToHtml401StrictFilterP.xslt
+		XSLTFile1.xslt = XSLTFile1.xslt
+		schema-for-xslt20.xsd = schema-for-xslt20.xsd
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Databases", "Databases", "{48735954-500F-4F6B-A696-F54A05362271}"
+	ProjectSection(SolutionItems) = preProject
+		HTML Form Capture.mdf = HTML Form Capture.mdf
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProject", "TestProject\TestProject.csproj", "{D0EF0206-C4A5-49A5-A02B-19C0E5A8A143}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InternetStandards", "InternetStandards\InternetStandards.csproj", "{CBBFCD0E-6812-44DE-9E14-07E2E9FDB31B}"
+EndProject
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "OpenIDWebsite", "..\..\WebSites\OpenIDWebsite\", "{7B4D5BE5-5A4A-4CDE-B5A2-B52CDBC555AE}"
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.PhysicalPath = "..\..\WebSites\OpenIDWebsite\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\OpenIDWebsite\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.VirtualPath = "/OpenIDWebsite"
+		DefaultWebSiteLanguage = "Visual Basic"
+		Release.AspNetCompiler.Debug = "False"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.PhysicalPath = "..\..\WebSites\OpenIDWebsite\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\OpenIDWebsite\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.VirtualPath = "/OpenIDWebsite"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		VWDPort = "57351"
+	EndProjectSection
+	ProjectSection(WebsiteProperties) = preProject
+		Debug.AspNetCompiler.Debug = "True"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.PhysicalPath = "..\..\WebSites\OpenIDWebsite\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\OpenIDWebsite\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.VirtualPath = "/OpenIDWebsite"
+		DefaultWebSiteLanguage = "Visual Basic"
+		Release.AspNetCompiler.Debug = "False"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.PhysicalPath = "..\..\WebSites\OpenIDWebsite\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\OpenIDWebsite\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.VirtualPath = "/OpenIDWebsite"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		VWDPort = "57351"
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7B4D5BE5-5A4A-4CDE-B5A2-B52CDBC555AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B4D5BE5-5A4A-4CDE-B5A2-B52CDBC555AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B4D5BE5-5A4A-4CDE-B5A2-B52CDBC555AE}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B4D5BE5-5A4A-4CDE-B5A2-B52CDBC555AE}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{CBBFCD0E-6812-44DE-9E14-07E2E9FDB31B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBBFCD0E-6812-44DE-9E14-07E2E9FDB31B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBBFCD0E-6812-44DE-9E14-07E2E9FDB31B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBBFCD0E-6812-44DE-9E14-07E2E9FDB31B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0EF0206-C4A5-49A5-A02B-19C0E5A8A143}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0EF0206-C4A5-49A5-A02B-19C0E5A8A143}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0EF0206-C4A5-49A5-A02B-19C0E5A8A143}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0EF0206-C4A5-49A5-A02B-19C0E5A8A143}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{48735954-500F-4F6B-A696-F54A05362271} = {B66E0E44-D7A0-4320-9C64-2B181D4AFB78}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		VisualSVNWorkingCopyRoot = .
+	EndGlobalSection
+EndGlobal

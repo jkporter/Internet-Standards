@@ -1,0 +1,193 @@
+﻿Date.prototype.format = function(f, customDateFormat)
+{
+    var abbreviatedDayNames = $abbreviatedDayNamesJS$
+    var dayNames = $dayNamesJS$
+    var abbreviatedMonthNames = $abbreviatedMonthNamesJS$
+    var monthNames = $monthNamesJS$
+    var amDesignator = $amDesignatorJS$;
+    var pmDesignator =$pmDesignatorJS$;
+    var timeSeparator = $timeSeparatorJS$;
+    var dateSeparator = $dateSeparatorJS$;
+
+    var d = this;
+    
+    if(f.length == 1 & !customDateFormat)
+        switch(f)
+        {
+            case 'd': return d.format($ShortDatePattern$);
+            case 'D': return d.format($LongDatePattern$);
+            case 'f': return d.format($LongDatePattern$);
+            case 'F': return d.format($FullDateTimePattern$);
+            case 'g': return d.format($LongDatePattern$);
+            case 'G': return d.format($LongDatePattern$);
+            case 'M': return d.format($MonthDayPattern$);
+            case 'm': return d.format($MonthDayPattern$);
+            case 'o': return d.format("yyyy'-'MM'-'dd'T'HH':'mm':'ss.fffffffK");
+            case 'R': return d.format($RFC1123Pattern$);
+            case 'r': return d.format($RFC1123Pattern$);
+            case 's': return d.format($SortableDateTimePattern$);
+            case 't': return d.format($ShortTimePattern$);
+            case 'T': return d.format($LongTimePattern$);
+            case 'u': return d.format($UniversalSortableDateTimePattern$);
+            case 'U': return d.format($FullDateTimePattern$);
+            case 'Y': return d.format($YearMonthPattern$);
+            case 'y': return d.format($YearMonthPattern$);
+        }
+    else
+        return f.replace(/(".*?"|'.*?'|[dfFghHmMstyz]+|[K:/]|%.|\\.)/g,
+            function($1)
+            {
+                switch ($1)
+                {
+                case 'd'      : return d.getDate();
+                case 'dd'     : return padDigits(d.getDate(), 2);
+                case 'ddd'    : return abbreviatedDayNames[d.getDay()];
+                case 'f'      : return getSecondsFraction(d, 1);
+                case 'ff'     : return getSecondsFraction(d, 2);
+                case 'fff'    : return getSecondsFraction(d, 3);
+                case 'ffff'   : return getSecondsFraction(d, 4);
+                case 'fffff'  : return getSecondsFraction(d, 5);
+                case 'ffffff' : return getSecondsFraction(d, 6);
+                case 'fffffff': return getSecondsFraction(d, 7);
+                case 'F'      : return getSecondsFraction(d, 1, true);
+                case 'FF'     : return getSecondsFraction(d, 2, true);
+                case 'FFF'    : return getSecondsFraction(d, 3, true);
+                case 'FFFF'   : return getSecondsFraction(d, 4, true);
+                case 'FFFFF'  : return getSecondsFraction(d, 5, true);
+                case 'FFFFFF' : return getSecondsFraction(d, 6, true);
+                case 'FFFFFFF': return getSecondsFraction(d, 7, true);
+                case 'h'      : return ((h = d.getHours() % 12) ? h : 12);
+                case 'H'      : return d.getHours();
+                case 'K'      : return timeZoneFormat(d, 'zzz'); //Check can also return 'Z' or ''
+                case 'm'      : return d.getMinutes();
+                case 'M'      : return d.getMonth();
+                case 'MM'     : return padDigits(d.getMonth(), 2);
+                case 'MMM'    : return abbreviatedMonthNames[d.getMonth()];
+                case 's'      : return d.getSeconds();
+                case 't'      : return d.getHours() < 12 ? amDesignator.charAt(0) : pmDesignator.charAt(0);
+                case 'y'      : return getLastDigits(d.getFullYear(), 2, true);
+                case 'yy'     : return getLastDigits(d.getFullYear(), 2);
+                case 'yyy'    : return getLastDigits(d.getFullYear(), 3);
+                case 'yyyy'   : return getLastDigits(d.getFullYear(), 4);
+                case 'z'      : return timeZoneFormat(d, $1);
+                case 'zz'     : return timeZoneFormat(d, $1);
+                case ':'      : return timeSeparator;
+                case '/'      : return dateSeparator;
+                default:
+                    if($1.match(/dddd+/))
+                        return dayNames[d.getDay()];
+                    if($1.match(/ffffffff+/) | $1.match(/FFFFFFFF+/))
+                        return '' // Should throw error!
+                    else if ($1.match(/g+/))
+                        return '';
+                    else if ($1.match(/hh+/))
+                        return padDigits(((h = d.getHours() % 12) ? h : 12), 2);
+                    else if ($1.match(/HH+/))
+                        return padDigits(d.getHours(), 2);
+                    else if ($1.match(/mm+/))
+                        return padDigits(d.getMinutes(), 2);
+                    else if($1.match(/MMMM+/))
+                        return monthNames[d.getMonth()];
+                    else if ($1.match(/ss+/))
+                        return padDigits(d.getSeconds(), 2);
+                    else if ($1.match(/tt+/))
+                        return d.getHours() < 12 ? amDesignator : pmDesignator;
+                    else if ($1.match(/yyyyy+/))
+                        return getLastDigits(d.getFullYear(), 5);
+                    else if ($1.match(/zzz+/))
+                        return timeZoneFormat(d, 'zzz');
+                    else if($1.match(/".*?"/))
+                        return $1.replace(/"(.*?)"/, '$1');
+                    else if($1.match(/'.*?'/))
+                        return $1.replace(/'(.*?)'/, "$1");
+                    else if($1.match(/%./))
+                        return d.format($1.charAt(1), true);
+                    else if($1.match(/\\./))
+                        return $1.charAt(1);
+                }
+            }
+        );
+    
+    return f;
+}
+
+function getSecondsFraction(d, significantDigits, doNotPad)
+{
+    var n = (d.getMilliseconds() / 1000).toString().substr(2);
+    
+    if(doNotPad & parseInt(n) == 0)
+        return '';
+        
+    if(n.length >= significantDigits)
+        return n.substr(0, significantDigits);
+        
+    var pd = ''; 
+    if (!doNotPad & significantDigits > n.length)
+        for (i = 0; i < (significantDigits - n.length); i++)
+            pd += '0';
+            
+    return n + pd;
+}
+
+function padDigits(n, totalDigits) 
+{ 
+    n = n.toString(); 
+    var pd = ''; 
+    if (totalDigits > n.length)
+        for (i=0; i < (totalDigits-n.length); i++)
+            pd += '0';
+    return pd + n.toString();
+}
+
+function padEndDigits(n, totalDigits) 
+{ 
+    n = n.toString(); 
+    var pd = ''; 
+    if (totalDigits > n.length)
+        for (i=0; i < (totalDigits-n.length); i++)
+            pd += '0';
+    return n.toString() + pd;
+}
+
+function getFirstDigits(n, totalDigits, doNotPad)
+{
+    n = n.toString();
+    if(n.length > totalDigits)
+        n = n.substr(0, totalDigits);
+        
+    if(doNotPad)
+        return parseInt(n);
+        
+    return padEndDigits(parseInt(n), totalDigits);
+}
+
+function getLastDigits(n, totalDigits, doNotpad)
+{
+    n = n.toString();
+    if(n.length > totalDigits)
+        n = n.substr(n.length - totalDigits - 1, totalDigits);
+        
+    if(doNotpad)
+        return parseInt(n);
+        
+    return padDigits(parseInt(n), totalDigits);
+}
+
+function timeZoneFormat(d, f)
+{
+    var n = -d.getTimezoneOffset();
+    if (n > 0)
+        sign = '+';
+    else
+        sign = '-';
+        
+    var hours = Math.abs(parseInt(n / 60));
+    var minutes = Math.abs(n % 60);
+        
+    if(f == 'z')
+        return sign + hours.toString();
+    else if (f == 'zz')
+        return sign + padDigits(hours, 2);
+    else if (f == 'zzz')
+        return sign + padDigits(hours, 2) + ':' + padDigits(minutes, 2);
+}
