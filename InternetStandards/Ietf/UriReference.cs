@@ -135,7 +135,7 @@ namespace InternetStandards.Ietf
         #region "Relative Resolution"
         protected static Uri TransformReferences(UriReference r, Uri Base)
         {
-            Uri t = new Uri();
+            var t = new Uri();
 
             if (r.scheme != null)
             {
@@ -157,10 +157,7 @@ namespace InternetStandards.Ietf
                     if (r.path == string.Empty)
                     {
                         t.path = Base.path;
-                        if (r.query != null)
-                            t.query = r.query;
-                        else
-                            t.query = Base.query;
+                        t.query = r.query ?? Base.query;
                     }
                     else
                     {
@@ -190,7 +187,7 @@ namespace InternetStandards.Ietf
             if (baseUri.Authority != null && baseUri.path == string.Empty)
                 return ("/" + relativePathReference);
 
-            int rightMostSlash = baseUri.path.LastIndexOf('/');
+            var rightMostSlash = baseUri.path.LastIndexOf('/');
             if (rightMostSlash == -1)
                 return relativePathReference;
 
@@ -199,12 +196,12 @@ namespace InternetStandards.Ietf
 
         protected static string RemoveDotSegments(string path)
         {
-            string inputBuffer = path;
-            StringBuilder outputBuffer = new StringBuilder(path.Length);
+            var inputBuffer = path;
+            var outputBuffer = new StringBuilder(path.Length);
 
             while (inputBuffer.Length > 0)
             {
-                int length = 0;
+                int length;
                 if (inputBuffer.StartsWith("../"))
                     inputBuffer = inputBuffer.Remove(0, 3);
                 else if (inputBuffer.StartsWith("./"))
@@ -214,7 +211,7 @@ namespace InternetStandards.Ietf
                 else if (StartsWithSegment(inputBuffer, "/..", out length))
                 {
                     inputBuffer = '/' + inputBuffer.Remove(0, length);
-                    int startIndex = outputBuffer.ToString().LastIndexOf('/');
+                    var startIndex = outputBuffer.ToString().LastIndexOf('/');
                     if (startIndex == -1) startIndex = 0;
                     outputBuffer.Remove(startIndex, outputBuffer.Length - startIndex);
                 }
@@ -244,21 +241,15 @@ namespace InternetStandards.Ietf
                 length = segment.Length;
                 return true;
             }
-            else if (s.StartsWith(segment) && s[segment.Length] == '/')
-            {
-                length = segment.Length + 1;
-                return true;
-            }
-
-            return false;
+            if (!s.StartsWith(segment) || s[segment.Length] != '/') return false;
+            length = segment.Length + 1;
+            return true;
         }
         #endregion
 
         protected internal static string GetGroupValueByName(Match match, string groupName)
         {
-            if (match.Groups[groupName].Success)
-                return match.Groups[groupName].Value;
-            return null;
+            return match.Groups[groupName].Success ? match.Groups[groupName].Value : null;
         }
     }
 
