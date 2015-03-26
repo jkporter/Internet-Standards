@@ -11,7 +11,7 @@ namespace InternetStandards.Ietf
         public Uri(string uriString)
             : base(uriString)
         {
-            if (this.Type != UriReferenceType.Uri)
+            if (Type != UriReferenceType.Uri)
                 throw new FormatException("Not a valid URI");
 
             absoluteUri = GetGroupValueByName(uriReferenceMatch, "absoluteUri");

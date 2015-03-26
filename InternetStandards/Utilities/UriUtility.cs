@@ -1,27 +1,29 @@
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace InternetStandards.Utilities
 {
     public class UriUtility
     {
+        public static char[] Reserved = { ':', '/', '?', '#', '[', ']', '@', '!', '$', '&', '\'', '(', ')', '*', '+', ',', ';', '=' };
+        public static char[] Unreserved = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-._~".ToCharArray();
+
         public static string FilePathToFileUrl(string path, bool useLocalhost = false)
         {
-            string host = useLocalhost ? "localhost" : string.Empty;
-            string urlPath = null; 
+            var host = useLocalhost ? "localhost" : string.Empty;
+            string urlPath; 
 
             if (path.StartsWith(@"\\?\UNC\", StringComparison.CurrentCultureIgnoreCase))
             {
-                int urlPathDelimiter = path.IndexOf('\\', 8);
+                var urlPathDelimiter = path.IndexOf('\\', 8);
                 host = path.Substring(8, urlPathDelimiter - 8);
                 urlPath = path.Substring(urlPathDelimiter);
             }
             else if (path.StartsWith(@"\\"))
             {
-                int urlPathDelimiter = path.IndexOf('\\', 2);
+                var urlPathDelimiter = path.IndexOf('\\', 2);
                 host = path.Substring(2, urlPathDelimiter - 2);
                 urlPath = path.Substring(urlPathDelimiter);
             }
@@ -36,15 +38,38 @@ namespace InternetStandards.Utilities
 
             char[] pathDelimiters = { '\\', '/' };
 
-            StringBuilder sb = new StringBuilder("file://");
+            var sb = new StringBuilder("file://");
             sb.Append(host);
-            foreach (string segment in urlPath.Split(pathDelimiters))
+            foreach (var segment in urlPath.Split(pathDelimiters))
             {
                 sb.Append('/');
                 sb.Append(PathSegmentEncode(segment));
             }
 
             return sb.ToString();
+        }
+
+        public static string Encode(string value, Encoding encoding)
+        {
+            var uriEncoding = new StringBuilder();
+            var characters = new CharacterEnumerator(value);
+            while (characters.MoveNext())
+            {
+                if (characters.Current.Length == 1 && Unreserved.Contains(characters.Current[0]))
+                {
+                    uriEncoding.Append(characters.Current);
+                }
+                else
+                {
+                    foreach (var b in encoding.GetBytes(characters.Current))
+                    {
+                        uriEncoding.Append('%');
+                        uriEncoding.Append(b.ToString("X2"));
+                    }
+                }
+            }
+
+            return uriEncoding.ToString();
         }
 
         public static string PathSegmentEncode(string str)
@@ -54,19 +79,19 @@ namespace InternetStandards.Utilities
 
         public static string PathSegmentEncode(string str, Encoding e)
         {
-            StringBuilder pathEncoded = new StringBuilder();
-            CharacterEnumerator characters = new CharacterEnumerator(str);
+            var pathEncoded = new StringBuilder();
+            var characters = new CharacterEnumerator(str);
             while (characters.MoveNext())
             {
-                string character = characters.Current;
+                var character = characters.Current;
                 if (Regex.IsMatch(character, @"^[A-Za-z0-9\-._~!$&'()*+,;=:@]$"))
                 {
                     pathEncoded.Append(character);
                 }
                 else
                 {
-                    byte[] bytes = e.GetBytes(character);
-                    foreach (byte b in bytes)
+                    var bytes = e.GetBytes(character);
+                    foreach (var b in bytes)
                     {
                         pathEncoded.Append('%');
                         pathEncoded.Append(b.ToString("X2"));

@@ -25,7 +25,7 @@ namespace InternetStandards.Utilities
             ((IDisposable)BaseEnumerator).Dispose();
         }
 
-        object System.Collections.IEnumerator.Current
+        object IEnumerator.Current
         {
             get { return BaseEnumerator.Current; }
         }

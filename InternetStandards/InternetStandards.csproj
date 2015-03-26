@@ -53,6 +53,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DDay.iCal">
+      <HintPath>..\..\..\..\visual studio 2013\Projects\Goena2015\packages\DDay.iCal.1.0.2.575\lib\DDay.iCal.dll</HintPath>
+    </Reference>
     <Reference Include="Mvp.Xml, Version=2.3.0.0, Culture=neutral, PublicKeyToken=6ead800d778c9b9f, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>bin\Mvp.Xml.dll</HintPath>
@@ -145,6 +148,8 @@
     <Compile Include="Ietf\WebDav\WebDavGet.cs" />
     <Compile Include="Ietf\WebDav\WebDavHandlerFactory.cs" />
     <Compile Include="Ecma\Json\JsonUtility.cs" />
+    <Compile Include="Ietf\xCal\xCalConverter.cs" />
+    <Compile Include="Ietf\xCal\xCalWriter.cs" />
     <Compile Include="Ietf\xCard\xCard.cs" />
     <Compile Include="JsonML\JsonMLReader.cs" />
     <Compile Include="JsonML\JsonMLWriter.cs" />
@@ -156,7 +161,7 @@
     <Compile Include="OpenID\OpenIDProviderBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Unicode\TextElementEnumerable.cs" />
-    <Compile Include="Unicode\LineBreaks.cs" />
+    <Compile Include="Unicode\NewLineFunctions.cs" />
     <Compile Include="Unicode\TextElementEnumerator.cs" />
     <Compile Include="Utilities\CharacterEnumerator.cs" />
     <Compile Include="Utilities\Collections\Generic\Class1.cs" />
@@ -187,13 +192,13 @@
     <None Include="Ietf\xCard\xCard.xsd">
       <SubType>Designer</SubType>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Ecma\EcmaScript\TextFile1.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Iso\" />
-    <Folder Include="Json\" />
     <Folder Include="Net\" />
     <Folder Include="W3c\Dom\" />
   </ItemGroup>

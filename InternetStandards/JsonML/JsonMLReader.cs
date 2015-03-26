@@ -128,8 +128,10 @@ namespace InternetStandards.JsonML
                     break;
             }
 
-            XmlNameTable d = new XmlNameTable();
-            d.Add(
+            /* XmlNameTable d = new XmlNameTable();
+            d.Add( */
+
+            return true;
         }
 
         public override bool ReadAttributeValue()

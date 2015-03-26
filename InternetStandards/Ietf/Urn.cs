@@ -10,26 +10,14 @@ namespace InternetStandards.Ietf
         public Urn(string urnString)
             : base(urnString)
         {
+            NamespaceSpecificString = null;
+            NamespaceIdentifier = null;
             Parse();
         }
 
-        private string namespaceIdentifier = null;
-        public string NamespaceIdentifier
-        {
-            get
-            {
-                return namespaceIdentifier;
-            }
-        }
+        public string NamespaceIdentifier { get; private set; }
 
-        private string namespaceSpecificString = null;
-        public string NamespaceSpecificString
-        {
-            get
-            {
-                return namespaceSpecificString;
-            }
-        }
+        public string NamespaceSpecificString { get; private set; }
 
         private void Parse()
         {
@@ -38,7 +26,7 @@ namespace InternetStandards.Ietf
 
         public override Uri Normalize()
         {
-            return (Uri)new Urn(Scheme.ToLowerInvariant() + ':' + NamespaceIdentifier.ToLowerInvariant() + ':' + this.NamespaceSpecificString);
+            return new Urn(Scheme.ToLowerInvariant() + ':' + NamespaceIdentifier.ToLowerInvariant() + ':' + NamespaceSpecificString);
         }
     }
 }
