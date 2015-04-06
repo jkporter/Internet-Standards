@@ -193,7 +193,7 @@ namespace InternetStandards.Ietf.iCalendar
         protected void WriteContentLineFold()
         {
             _writer.WriteLine();
-            _writer.Write(' ');
+            _writer.Write(WhiteSpaceCharacter);
             LineOctects = _writer.Encoding.GetByteCount(new[] { WhiteSpaceCharacter });
         }
 
