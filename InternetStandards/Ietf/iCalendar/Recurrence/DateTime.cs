@@ -90,6 +90,11 @@ namespace InternetStandards.Ietf.iCalendar.Recurrence
             get { return _localDateTime.Day; }
         }
 
+        public IsoDayOfWeek DayOfWeek
+        {
+            get { return _localDateTime.IsoDayOfWeek; }
+        }
+
         public int DayOfYear
         {
             get { return _localDateTime.DayOfYear; }

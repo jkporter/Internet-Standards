@@ -15,13 +15,15 @@ namespace InternetStandards.Ietf.iCalendar.Recurrence
 
     public interface IDate
     {
-        int Year { get;  }
+        int Year { get; }
 
-        int Month { get;  }
+        int Month { get; }
 
-        int Day { get;  }
+        int Day { get; }
 
         int DayOfYear { get; }
+
+        IsoDayOfWeek DayOfWeek { get; }
 
         IDate PlusYears(int years);
 

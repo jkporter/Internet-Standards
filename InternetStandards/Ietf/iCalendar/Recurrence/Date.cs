@@ -24,6 +24,11 @@ namespace InternetStandards.Ietf.iCalendar.Recurrence
             get { return _localDate.Day; }
         }
 
+        public IsoDayOfWeek DayOfWeek
+        {
+            get { return _localDate.IsoDayOfWeek; }
+        }
+
         public int DayOfYear
         {
             get { return _localDate.DayOfYear; }
