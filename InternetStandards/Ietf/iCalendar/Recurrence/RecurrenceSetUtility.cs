@@ -67,9 +67,9 @@ namespace InternetStandards.Ietf.iCalendar.Recurrence
                     .Select(
                         interval =>
                             GetSetOfRecurrenceInstances(recurrenceRule, interval)
-                                .BySetPosition(recurrenceRule.BySetPosition))
+                                .BySetPosition(recurrenceRule))
                     .SelectMany(set => set)
-                    .Count(recurrenceRule.Count)
+                    .Count(recurrenceRule)
                     .Until(recurrenceRule, timeZone);
 
             return instances;
@@ -120,52 +120,41 @@ namespace InternetStandards.Ietf.iCalendar.Recurrence
 
         private static IEnumerable<T> GetSetOfRecurrenceInstances<T>(RecurrenceRule recurrenceRule, T instance) where T : IDate
         {
-            var set = Enumerable.Repeat(instance, 1);
-            if (recurrenceRule.ByMonth != null)
-                set = set.ByMonth(recurrenceRule.ByMonth, recurrenceRule.Frequency);
+            var set = Enumerable.Repeat(instance, 1)
+                .ByMonth(recurrenceRule)
+                .ByYearDay(recurrenceRule)
+                .ByMonthDay(recurrenceRule)
+                .ByDay(recurrenceRule);
 
-            if (recurrenceRule.ByYearDay != null)
-                set = set.ByYearDay(recurrenceRule.ByYearDay, recurrenceRule.Frequency);
-
-            if (recurrenceRule.ByMonthDay != null)
-                set = set.ByMonthDay(recurrenceRule.ByMonthDay, recurrenceRule.Frequency);
-
-            if (recurrenceRule.ByDay != null)
-                set = set.ByDay(recurrenceRule);
-
-            if (instance is IDateTime && (recurrenceRule.ByHour != null || recurrenceRule.ByMinute != null || recurrenceRule.BySecond != null))
-            {
-                var set2 = set.Cast<IDateTime>();
-                if (recurrenceRule.ByHour != null)
-                    set2 = set2.ByHour(recurrenceRule.ByHour, recurrenceRule.Frequency);
-
-                if (recurrenceRule.ByMinute != null)
-                    set2 = set2.ByMinute(recurrenceRule.ByMinute, recurrenceRule.Frequency);
-
-                if (recurrenceRule.BySecond != null)
-                    set2 = set2.BySecond(recurrenceRule.BySecond, recurrenceRule.Frequency);
-
-                set = set2.Cast<T>();
-            }
-
+            if (instance is IDateTime)
+                set =
+                    set.Cast<IDateTime>()
+                        .ByHour(recurrenceRule)
+                        .ByMinute(recurrenceRule)
+                        .BySecond(recurrenceRule)
+                        .Cast<T>();
+            
             return set;
         }
 
-        private static IEnumerable<T> ByMonth<T>(this IEnumerable<T> instances, IEnumerable<int> byMonthList, Frequency recurrenceRuleType) where T : IDate
+        private static IEnumerable<T> ByMonth<T>(this IEnumerable<T> instances, RecurrenceRule recurrenceRule) where T : IDate
         {
-            switch (recurrenceRuleType)
+            if (recurrenceRule.ByDay == null)
+                return instances;
+
+            switch (recurrenceRule.Frequency)
             {
                 case Frequency.Yearly:
                     return (from instance in instances
-                            from monthNumber in byMonthList.OrderBy(monthNumber => monthNumber)
-                            select (T)instance.PlusMonths(monthNumber - instance.Month)).Distinct();
+                            from monthNumber in recurrenceRule.ByMonth.Distinct().OrderBy(monthNumber => monthNumber)
+                        select (T) instance.PlusMonths(monthNumber - instance.Month));
                 case Frequency.Monthly:
                 case Frequency.Weekly:
                 case Frequency.Daily:
                 case Frequency.Hourly:
                 case Frequency.Minutely:
                 case Frequency.Secondly:
-                    return instances.OrderedFilter(byMonthList.OrderBy(monthNumber => monthNumber),
+                    return instances.OrderedFilter(recurrenceRule.ByMonth.OrderBy(monthNumber => monthNumber),
                         instance => instance.Month);
             }
 
@@ -185,49 +174,37 @@ namespace InternetStandards.Ietf.iCalendar.Recurrence
             return null;
         } */
 
-        private static IEnumerable<T> ByYearDay<T>(this IEnumerable<T> instances, IEnumerable<int> byYearDayList, Frequency recurrenceRuleType) where T : IDate
+        private static IEnumerable<T> ByYearDay<T>(this IEnumerable<T> instances, RecurrenceRule recurrenceRule) where T : IDate
         {
-            switch (recurrenceRuleType)
+            if (recurrenceRule.ByYearDay == null)
+                return instances;
+
+            switch (recurrenceRule.Frequency)
             {
                 case Frequency.Yearly:
-                    foreach (var instance in instances)
-                        foreach (
-                            var dayInYear in
-                                byYearDayList.Select(yearDayNumber => GetDayOfYear(yearDayNumber, instance.Year))
-                                    .Where(dayOfYear => dayOfYear.HasValue)
-                                    .Select(dayOfYear => dayOfYear.Value)
-                                    .OrderBy(dayOfYear => dayOfYear)
-                                    .Distinct())
-                        {
-                            yield return (T)instance.PlusDays(instance.DayOfYear - dayInYear);
-                        }
-                    break;
+                    return from instance in instances
+                           from dayInYear in GetDaysOfYear(recurrenceRule.ByYearDay, instance.Year)
+                           select (T)instance.PlusDays(instance.DayOfYear - dayInYear);
                 case Frequency.Hourly:
                 case Frequency.Minutely:
                 case Frequency.Secondly:
-                    foreach (
-                        var instance in
-                            instances.Where(
-                                instance =>
-                                    byYearDayList.Select(yearDayNumber => GetDayOfYear(yearDayNumber, instance.Year))
-                                        .Where(dayOfYear => dayOfYear.HasValue)
-                                        .Select(dayOfYear => dayOfYear.Value)
-                                        .Contains(instance.DayOfYear)))
-                        yield return instance;
-                    break;
+                    return
+                        instances.Where(
+                            instance =>
+                                GetDaysOfYear(recurrenceRule.ByYearDay, instance.Year).Contains(instance.DayOfYear));
             }
         }
 
-        private static IEnumerable<T> ByMonthDay<T>(this  IEnumerable<T> instances, IEnumerable<int> byMonthDayList, Frequency recurrenceRuleType) where T : IDate
+        private static IEnumerable<T> ByMonthDay<T>(this  IEnumerable<T> instances, RecurrenceRule recurrenceRule) where T : IDate
         {
-            switch (recurrenceRuleType)
+            switch (recurrenceRule.Frequency)
             {
                 case Frequency.Yearly:
                 case Frequency.Monthly:
                     return
                         instances.SelectMany(
                             instance =>
-                                byMonthDayList.Select(monthDay => GetDayOfMonth(monthDay, instance.Year, instance.Month))
+                                recurrenceRule.ByMonthDay.Select(monthDay => GetDayOfMonth(monthDay, instance.Year, instance.Month))
                                     .Where(dayOfMonth => dayOfMonth.HasValue)
                                     .Select(dayOfMonth => dayOfMonth.Value)
                                     .OrderBy(dayOfMonth => dayOfMonth)
@@ -240,7 +217,7 @@ namespace InternetStandards.Ietf.iCalendar.Recurrence
                     return
                         instances.Where(
                             instance =>
-                                byMonthDayList.Select(monthDay => GetDayOfMonth(monthDay, instance.Year, instance.Month))
+                                recurrenceRule.ByMonthDay.Select(monthDay => GetDayOfMonth(monthDay, instance.Year, instance.Month))
                                     .Where(dayOfMonth => dayOfMonth.HasValue)
                                     .Select(dayOfMonth => dayOfMonth.Value)
                                     .Contains(instance.Day));
@@ -297,29 +274,29 @@ namespace InternetStandards.Ietf.iCalendar.Recurrence
             return null;
         }
 
-        private static IEnumerable<IDateTime> ByHour(this IEnumerable<IDateTime> instances, IEnumerable<int> byHourList, Frequency recurrenceRuleType)
+        private static IEnumerable<IDateTime> ByHour(this IEnumerable<IDateTime> instances, RecurrenceRule recurrenceRule)
         {
-            switch (recurrenceRuleType)
+            switch (recurrenceRule.Frequency)
             {
                 case Frequency.Yearly:
                 case Frequency.Monthly:
                 case Frequency.Weekly:
                 case Frequency.Daily:
                     return (from instance in instances
-                            from hour in byHourList.OrderBy(hour => hour)
+                            from hour in recurrenceRule.ByHour.OrderBy(hour => hour)
                             select instance.PlusHours(hour - instance.Hour)).Distinct();
                 case Frequency.Hourly:
                 case Frequency.Minutely:
                 case Frequency.Secondly:
-                    return instances.Where(instance => byHourList.Contains((instance).Hour));
+                    return instances.Where(instance => recurrenceRule.ByHour.Contains((instance).Hour));
             }
 
             return null;
         }
 
-        private static IEnumerable<IDateTime> ByMinute(this IEnumerable<IDateTime> instances, IEnumerable<int> byMinuteList, Frequency recurrenceRuleType)
+        private static IEnumerable<IDateTime> ByMinute(this IEnumerable<IDateTime> instances, RecurrenceRule recurrenceRule)
         {
-            switch (recurrenceRuleType)
+            switch (recurrenceRule.Frequency)
             {
                 case Frequency.Yearly:
                 case Frequency.Monthly:
@@ -327,19 +304,19 @@ namespace InternetStandards.Ietf.iCalendar.Recurrence
                 case Frequency.Daily:
                 case Frequency.Hourly:
                     return (from instance in instances
-                            from minute in byMinuteList.OrderBy(minute => minute)
+                            from minute in recurrenceRule.ByMinute.OrderBy(minute => minute)
                             select instance.PlusMinutes(minute - instance.Minute)).Distinct();
                 case Frequency.Minutely:
                 case Frequency.Secondly:
-                    return instances.Where(instance => byMinuteList.Contains(instance.Hour));
+                    return instances.Where(instance => recurrenceRule.ByMinute.Contains(instance.Hour));
             }
 
             return null;
         }
 
-        private static IEnumerable<IDateTime> BySecond(this IEnumerable<IDateTime> instances, IEnumerable<int> bySecondList, Frequency recurrenceRuleType)
+        private static IEnumerable<IDateTime> BySecond(this IEnumerable<IDateTime> instances, RecurrenceRule recurrenceRule)
         {
-            switch (recurrenceRuleType)
+            switch (recurrenceRule.Frequency)
             {
                 case Frequency.Yearly:
                 case Frequency.Monthly:
@@ -348,31 +325,31 @@ namespace InternetStandards.Ietf.iCalendar.Recurrence
                 case Frequency.Hourly:
                 case Frequency.Minutely:
                     return (from instance in instances
-                            from second in bySecondList.OrderBy(second => second).Distinct()
+                            from second in recurrenceRule.BySecond.Distinct().OrderBy(second => second)
                             select instance.PlusSeconds(second - instance.Second));
                 case Frequency.Secondly:
-                    return instances.Where(instance => bySecondList.Contains(instance.Second));
+                    return instances.Where(instance => recurrenceRule.BySecond.Contains(instance.Second));
             }
 
             return null;
         }
 
-        private static IEnumerable<T> BySetPosition<T>(this IEnumerable<T> instances, IEnumerable<int> setPositionDayList)
+        private static IEnumerable<T> BySetPosition<T>(this IEnumerable<T> instances, RecurrenceRule recurrenceRule)
         {
-            if (setPositionDayList == null)
+            if (recurrenceRule.BySetPosition == null)
                 return instances;
 
             return
                 instances.Where(
                     (instance, index) =>
-                        setPositionDayList.Select(setPositionDay => GetIndex(setPositionDay, instances.Count()))
+                        recurrenceRule.BySetPosition.Select(setPositionDay => GetIndex(setPositionDay, instances.Count()))
                             .Contains(index));
         }
 
-        private static IEnumerable<T> Count<T>(this IEnumerable<T> instances, int? count)
+        private static IEnumerable<T> Count<T>(this IEnumerable<T> instances, RecurrenceRule recurrenceRule)
             where T : IDate
         {
-            return count.HasValue ? instances.Take(count.Value) : instances;
+            return recurrenceRule.Count.HasValue ? instances.Take(recurrenceRule.Count.Value) : instances;
         }
 
         private static IEnumerable<T> Until<T>(this IEnumerable<T> instances, RecurrenceRule rule, DateTimeZone timeZone) where T : IDate
@@ -414,6 +391,16 @@ namespace InternetStandards.Ietf.iCalendar.Recurrence
         {
             var maxMonth = CalendarSystem.Iso.GetMaxMonth(year);
             return (new LocalDate(year, maxMonth, CalendarSystem.Iso.GetDaysInMonth(year, maxMonth))).DayOfYear;
+        }
+
+        private static IEnumerable<int> GetDaysOfYear(IEnumerable<int> yearDays, int year)
+        {
+            var daysInYear = GetDaysInYear(year);
+            return from yearDay in yearDays
+                   select yearDay > 0 ? yearDay : daysInYear + yearDay + 1
+                       into dayOfYear
+                       where dayOfYear >= 1 && dayOfYear <= daysInYear
+                       select dayOfYear;
         }
 
         private static int? GetDayOfYear(int yearDay, int year)
@@ -520,6 +507,5 @@ namespace InternetStandards.Ietf.iCalendar.Recurrence
                                           ? 7 + difference
                                           : difference));
         }
-
     }
 }

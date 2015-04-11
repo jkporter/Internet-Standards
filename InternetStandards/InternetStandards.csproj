@@ -121,7 +121,7 @@
     <Compile Include="Ietf\iCalendar\Recurrence\IDate.cs" />
     <Compile Include="Ietf\iCalendar\Recurrence\IDateTime.cs" />
     <Compile Include="Ietf\iCalendar\Recurrence\RecurrenceRule.cs" />
-    <Compile Include="Ietf\iCalendar\Recurrence\RecurrenceRuleUtility.cs" />
+    <Compile Include="Ietf\iCalendar\Recurrence\RecurrenceSetUtility.cs" />
     <Compile Include="Ietf\IPNetwork.cs" />
     <Compile Include="Ietf\LanguageRange.cs" />
     <Compile Include="Ietf\ExtendedLanguageRange.cs" />
