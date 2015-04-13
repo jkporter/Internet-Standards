@@ -193,6 +193,8 @@ namespace InternetStandards.Ietf.iCalendar.Recurrence
                             instance =>
                                 GetDaysOfYear(recurrenceRule.ByYearDay, instance.Year).Contains(instance.DayOfYear));
             }
+
+            throw new Exception();
         }
 
         private static IEnumerable<T> ByMonthDay<T>(this  IEnumerable<T> instances, RecurrenceRule recurrenceRule) where T : IDate

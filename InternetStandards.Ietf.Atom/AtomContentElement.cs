@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
-using InternetStandards.Ietf.Http;
+// using InternetStandards.Ietf.Http;
 
 namespace InternetStandards.Ietf.Atom
 {
@@ -86,7 +86,7 @@ namespace InternetStandards.Ietf.Atom
                     return false;
             }
 
-            MediaType[] xmlMediaTypes = new MediaType[] {
+            /* MediaType[] xmlMediaTypes = new MediaType[] {
                 new MediaType("text/xml"),
                 new MediaType("application/xml"),
                 new MediaType("text/xml-external-parsed-entity"),
@@ -103,7 +103,7 @@ namespace InternetStandards.Ietf.Atom
             }
             catch
             {
-            }
+            } */
 
             return !(Type.StartsWith("text/", StringComparison.InvariantCultureIgnoreCase)
                 | Type.EndsWith("+xml", StringComparison.InvariantCultureIgnoreCase)

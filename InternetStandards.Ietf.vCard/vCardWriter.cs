@@ -100,10 +100,10 @@ namespace InternetStandards.Ietf.vCard
             WriteRawValue(sign + value.ToString("hhmm"));
         }
 
-        public void WriteLanguageTagValue(LanguageTag languageTag)
+        /* public void WriteLanguageTagValue(LanguageTag languageTag)
         {
             WriteRawValue(languageTag.ToString());
-        }
+        } */
 
         #endregion
 
