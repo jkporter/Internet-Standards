@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace InternetStandards.Utilities.Collections.Generic
+﻿namespace InternetStandards.Utilities.Collections.Generic
 {
-    public class NameValuePair<TValue>
+    public struct NameValuePair<TValue>
     {
         public NameValuePair(string name, TValue value)
-            : base()
         {
             Name = name;
             Value = value;
@@ -17,13 +11,11 @@ namespace InternetStandards.Utilities.Collections.Generic
         public string Name
         {
             get;
-            private set;
         }
 
         public TValue Value
         {
             get;
-            private set;
         }
     }
 }

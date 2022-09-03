@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using InternetStandards.Utilities;
 
 namespace InternetStandards.Unicode
@@ -22,8 +19,6 @@ namespace InternetStandards.Unicode
             return ((TextElementEnumerator)BaseEnumerator).GetTextElement();
         }
 
-        public int ElementIndex {
-            get { return ((TextElementEnumerator)BaseEnumerator).ElementIndex; }
-        }
+        public int ElementIndex => ((TextElementEnumerator)BaseEnumerator).ElementIndex;
     }
 }

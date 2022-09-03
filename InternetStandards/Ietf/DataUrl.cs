@@ -6,7 +6,6 @@ using System.Text.RegularExpressions;
 using System.IO;
 using System.Globalization;
 using System.Collections.Specialized;
-using System.Web;
 
 namespace InternetStandards.Ietf
 {

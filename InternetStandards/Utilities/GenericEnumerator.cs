@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace InternetStandards.Utilities
 {
@@ -13,31 +11,32 @@ namespace InternetStandards.Utilities
             BaseEnumerator = enumerator;
         }
 
-        public IEnumerator BaseEnumerator { get; private set; }
+        public IEnumerator BaseEnumerator { get; }
 
-        public T Current
+        public T Current => (T)BaseEnumerator.Current;
+
+        object IEnumerator.Current => BaseEnumerator.Current;
+
+        public bool MoveNext() => BaseEnumerator.MoveNext();
+
+        public void Reset() => BaseEnumerator.Reset();
+
+        ~GenericEnumerator() => Dispose(false);
+
+        public void Dispose()
         {
-            get { return (T)BaseEnumerator.Current; }
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
-        void IDisposable.Dispose()
+        private bool _disposedValue;
+        protected virtual void Dispose(bool disposing)
         {
-            ((IDisposable)BaseEnumerator).Dispose();
-        }
+            if (_disposedValue) return;
 
-        object IEnumerator.Current
-        {
-            get { return BaseEnumerator.Current; }
-        }
-
-        public bool MoveNext()
-        {
-            return BaseEnumerator.MoveNext();
-        }
-
-        public void Reset()
-        {
-            BaseEnumerator.Reset();
+            if(disposing && BaseEnumerator is IDisposable disposable)
+                disposable.Dispose();
+            _disposedValue = true;
         }
     }
 }

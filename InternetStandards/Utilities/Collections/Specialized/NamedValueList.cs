@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Collections.Specialized;
-using System.Collections;
-using System.Runtime.Serialization;
+﻿using System.Collections.Generic;
+using System.Linq;
 using InternetStandards.Utilities.Collections.Generic;
 
 namespace InternetStandards.Utilities.Collections.Specialized
@@ -27,7 +23,7 @@ namespace InternetStandards.Utilities.Collections.Specialized
 
         public virtual void Add(string name, TValue value)
         {
-            this.Add(new NameValuePair<TValue>(name, value));
+            Add(new NameValuePair<TValue>(name, value));
         }
 
         public virtual bool ContainsKey(string key)
@@ -43,19 +39,17 @@ namespace InternetStandards.Utilities.Collections.Specialized
         public virtual int GetIndex(TValue value)
         {
             var equalatableObject = value as IEqualityComparer<TValue>;
-            if (value != null)
-            {
-                for (int i = 0; i < this.Count; i++)
-                    if (equalatableObject.Equals(this[i].Value))
-                        return i;
-            }
+            if (value == null) return -1;
+            for (var i = 0; i < Count; i++)
+                if (equalatableObject.Equals(this[i].Value))
+                    return i;
 
             return -1;
         }
 
         public virtual int GetIndexByName(string name)
         {
-            for (int i = 0; i < this.Count; i++)
+            for (var i = 0; i < Count; i++)
                 if (this[i].Name == name)
                     return i;
 
@@ -65,14 +59,11 @@ namespace InternetStandards.Utilities.Collections.Specialized
         public virtual string[] GetUniqueKeys()
         {
             List<string> keys = new List<string>();
-            foreach (NameValuePair<TValue> nameValuePair in this)
+            foreach (var nameValuePair in this)
                 if (!keys.Contains(nameValuePair.Name))
                     keys.Add(nameValuePair.Name);
 
-            if (keys.Count == 0)
-                return null;
-
-            return keys.ToArray();
+            return keys.Count == 0 ? null : keys.ToArray();
         }
 
         public virtual string[] GetKeys()
@@ -89,31 +80,14 @@ namespace InternetStandards.Utilities.Collections.Specialized
 
         public virtual TValue[] GetValues(string name)
         {
-            List<TValue> values = new List<TValue>();
-            foreach (NameValuePair<TValue> nameValuePair in this)
-                if (nameValuePair.Name == name)
-                    values.Add(nameValuePair.Value);
+            var values = this.Where(nameValuePair => nameValuePair.Name == name)
+                .Select(nameValuePair => nameValuePair.Value).ToList();
 
-            if (values.Count == 0)
-                return null;
-
-            return values.ToArray();
+            return values.Count == 0 ? null : values.ToArray();
         }
 
-        public virtual string[] Keys
-        {
-            get
-            {
-                return GetKeys();
-            }
-        }
+        public virtual string[] Keys => GetKeys();
 
-        public virtual TValue[] this[string key]
-        {
-            get
-            {
-                return GetValues(key);
-            }
-        }
+        public virtual TValue[] this[string key] => GetValues(key);
     }
 }

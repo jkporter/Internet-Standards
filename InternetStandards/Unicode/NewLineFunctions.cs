@@ -5,7 +5,7 @@ using System.Text;
 
 namespace InternetStandards.Unicode
 {
-    public enum NewLineFunctions
+    public enum NewLineFunction
     {
         CR = 0x0D,
         LF = 0x0A,

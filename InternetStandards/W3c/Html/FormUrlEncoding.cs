@@ -1,12 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using InternetStandards.Utilities.Collections.Specialized;
-using System.Globalization;
 using InternetStandards.Utilities;
-using InternetStandards.Utilities.Collections.Generic;
 
 namespace InternetStandards.W3c.Html
 {
@@ -22,7 +19,8 @@ namespace InternetStandards.W3c.Html
             var match = encodedRegEx.Match(formUrlEncodedString);
 
             if (!match.Success)
-                throw new FormatException("The string '" + formUrlEncodedString + "' is not a valid form URL encoded string.");
+                throw new FormatException(
+                    $"The string '{formUrlEncodedString}' is not a valid form URL encoded string.");
 
             var controlNameValuePairs = new NamedValueList<string>();
             foreach (var controlNameValuePair in formUrlEncodedString.Split('&').Select(controlNameValuePairString => controlNameValuePairString.Split('=')))
@@ -38,12 +36,12 @@ namespace InternetStandards.W3c.Html
         private static string InternalDecode(string escapedString, string newLine)
         {
             const string replacePattern = @"(?<space>\+)|(?<lineBreak>(?i)%0D%0A(?-i))|(?<nonAlphaNumeric>%([0-9a-zA-Z]{2}))|.";
-            return Regex.Replace(escapedString, replacePattern, new FormUrlEncodingDecodeMatchEvaluation() { NewLine = newLine }.MatchEvaluator);
+            return Regex.Replace(escapedString, replacePattern, new FormUrlEncodingDecodeMatchEvaluation { NewLine = newLine }.MatchEvaluator);
         }
 
         private class FormUrlEncodingDecodeMatchEvaluation
         {
-            private ASCIIEncoding asciiEncoding = new ASCIIEncoding();
+            private readonly ASCIIEncoding asciiEncoding = new();
 
             public FormUrlEncodingDecodeMatchEvaluation()
             {
@@ -64,17 +62,15 @@ namespace InternetStandards.W3c.Html
                 if (m.Groups["lineBreak"].Success)
                     return "\u2028";
 
-                if (m.Groups["nonAlphaNumeric"].Success)
-                {
-                    var value = asciiEncoding.GetString(new byte[] { Convert.ToByte(m.Groups["nonAlphaNumeric"].Value.Substring(1), 16) })[0];
-                    if(char.IsLetterOrDigit(value))
-                        throw new FormatException(string.Format("'{0}' decodes to an alpha-numeric character and should not have been escaped.", m.Groups["nonAlphaNumeric"].Value));
-                    if ((value == 0x0A || value == 0x0D))
-                        return NewLine ?? value.ToString();
-                    return value.ToString();
-                }
+                if (!m.Groups["nonAlphaNumeric"].Success) return m.Value;
 
-                return m.Value;
+                var value = asciiEncoding.GetString(new[] { Convert.ToByte(m.Groups["nonAlphaNumeric"].Value[1..], 16) })[0];
+                if (char.IsLetterOrDigit(value))
+                    throw new FormatException(
+                        $"'{m.Groups["nonAlphaNumeric"].Value}' decodes to an alpha-numeric character and should not have been escaped.");
+                if (value == 0x0A || value == 0x0D)
+                    return NewLine ?? value.ToString();
+                return value.ToString();
             }
         }
 
@@ -100,28 +96,37 @@ namespace InternetStandards.W3c.Html
 
         private static string InternalEncode(string str)
         {
-            
             var sb = new StringBuilder();
             var enumerator = new CharacterEnumerator(str);
 
             var lastWasCr = false;
             while (enumerator.MoveNext())
             {
-                var c = enumerator.Current;
                 var codePoint = enumerator.GetCodePoint();
 
-                if (c == " ")
-                    sb.Append('+');
-                else if (c == "\u2029" || c == "\u2028" || c == "\u0085" || c == "\u000D" || (c == "\u000A" && !lastWasCr))
-                    sb.Append("%0D%0A");
-                else if (Regex.IsMatch(c, @"[A-Za-z0-9]"))
-                    sb.Append(c);
-                else if (codePoint > 127)
-                    throw new FormatException("The non-alphanumeric character '" + c + "' cannot be represented as ASCII coded character.");
-                else if (c != "\u000A")
-                    sb.Append("%" + ((byte)codePoint).ToString("X2"));
+                switch (codePoint)
+                {
+                    case ' ':
+                        sb.Append('+');
+                        break;
+                    case '\u2029' or '\u2028' or '\u0085' or '\u000D':
+                    case '\u000A' when !lastWasCr:
+                        sb.Append("%0D%0A");
+                        break;
+                    case '\u000A':
+                        break;
+                    case >= 'a' and <= 'z' or >= 'A' and <= 'Z' or >= '0' and <= '9':
+                        sb.Append(enumerator.Current);
+                        break;
+                    case > (char)127:
+                        throw new FormatException(
+                            $"The non-alphanumeric character '{enumerator.Current}' cannot be represented as ASCII coded character.");
+                    default:
+                        sb.Append("%" + ((byte)codePoint).ToString("X2"));
+                        break;
+                }
 
-                lastWasCr = c == "\u000D";
+                lastWasCr = codePoint == '\u000D';
             }
 
             return sb.ToString();

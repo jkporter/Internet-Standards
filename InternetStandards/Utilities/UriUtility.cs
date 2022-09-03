@@ -108,8 +108,3 @@ namespace InternetStandards.Utilities
         }
     }
 }
-
-public enum UriComponent
-{
-    Scheme
-}

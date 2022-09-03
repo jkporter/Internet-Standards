@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace InternetStandards.Utilities
 {
     public class UnicodeScalarValue
     {
-        readonly int _scalarValue;
-        readonly string _codePoints;
+        private readonly int _scalarValue;
+        private readonly string _codePoints;
 
         public UnicodeScalarValue(int scalarValue)
         {
@@ -22,21 +20,9 @@ namespace InternetStandards.Utilities
             _codePoints = s;
         }
 
-        public int ScalarValue
-        {
-            get
-            {
-                return _scalarValue;
-            }
-        }
+        public int ScalarValue => _scalarValue;
 
-        public string CodePoints
-        {
-            get
-            {
-                return _codePoints;
-            }
-        }
+        public string CodePoints => _codePoints;
 
         public static IEnumerable<UnicodeScalarValue> GetScalerValues(string s)
         {

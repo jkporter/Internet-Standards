@@ -9,7 +9,7 @@ namespace InternetStandards.Ietf.Mail.Mime
     {
         protected string type;
         protected string subtype;
-        protected NameValueCollection parameters = new NameValueCollection();
+        protected NameValueCollection parameters;
 
         public const string MediaTypeApplication = "application";
         public const string MediaTypeAudio = "audio";
@@ -37,29 +37,11 @@ namespace InternetStandards.Ietf.Mail.Mime
                 parameters.Add(paramNames[i], GetValue(paramValues, i));
         }
         
-        public string Type
-        {
-            get
-            {
-                return type;
-            }
-        }
+        public string Type => type;
 
-        public string Subtype
-        {
-            get
-            {
-                return subtype;
-            }
-        }
+        public string Subtype => subtype;
 
-        public NameValueCollection Parameters
-        {
-            get
-            {
-                return parameters;
-            }
-        }
+        public NameValueCollection Parameters => parameters;
 
         private static string GetValue(string[] paramValues, int index)
         {

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace InternetStandards.Utilities
@@ -6,7 +7,9 @@ namespace InternetStandards.Utilities
     public class CharacterEnumerator : IEnumerator<string>
     {
         private readonly string _s;
-        private int _index = -1;
+        private int _currentIndex = -1;
+        private bool currentIsSurrogatePair;
+        private bool hasNext = true;
 
         public CharacterEnumerator(string s)
         {
@@ -15,7 +18,10 @@ namespace InternetStandards.Utilities
 
         public int GetCodePoint()
         {
-            return char.ConvertToUtf32(_s, _index);
+            if(_currentIndex != -1 && hasNext)
+                return char.ConvertToUtf32(_s, _currentIndex);
+
+            throw new InvalidOperationException();
         }
 
         public string Current { get; private set; }
@@ -24,25 +30,23 @@ namespace InternetStandards.Utilities
         {
         }
 
-        object IEnumerator.Current
-        {
-            get { return Current; }
-        }
+        object IEnumerator.Current => Current;
 
         public bool MoveNext()
         {
-            var moveAhead = _index == -1 ? 1 : Current.Length;
-            if (_index + moveAhead >= _s.Length)
+            if (!hasNext || (hasNext = (_currentIndex += currentIsSurrogatePair ? 2 : 1) >= _s.Length))
                 return false;
 
-            Current = _s.Substring((_index += moveAhead), char.IsSurrogatePair(_s, _index) ? 2 : 1);
+            Current = _s.Substring(_currentIndex,
+                (currentIsSurrogatePair = char.IsSurrogatePair(_s, _currentIndex)) ? 2 : 1);
 
             return true;
         }
 
         public void Reset()
         {
-            _index = -1;
+            _currentIndex = -1;
+            hasNext = true;
         }
     }
 }

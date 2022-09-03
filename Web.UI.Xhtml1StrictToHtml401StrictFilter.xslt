@@ -25,7 +25,7 @@ specified.
 The source XHTML must be in accordance with appendix C.8 Fragment Identifiers
 [http://www.w3.org/TR/2002/REC-xhtml1-20020801/#C_8], paragraph 3, of the
 'XHTML™ 1.0 The Extensible HyperText Markup Language (Second Edition)' for a
-valid HTML document to be outputed. -->
+valid HTML document to be output. -->
 <xsl:stylesheet 
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xmlns:xhtml="http://www.w3.org/1999/xhtml"
